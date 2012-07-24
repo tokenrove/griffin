@@ -1,0 +1,22 @@
+
+See [[http://cipht.net/2012/06/29/griffin-initial-release.html][this blog post]] for the rationale behind
+yet-another-emacs-blog-generator.  I wasn't aware of either org-blog
+or org2blog or any of the other things at the time.  From that post:
+
+#+begin_quote
+I wanted to write my posts with [[http://orgmode.org][org-mode]], which has sensible
+LaTeX-style math input, tables, and syntax highlighting that plays
+well with emacs.  Org has its own publishing features, but I wasn't
+going to let that stop me from reinventing the wheel for the
+/n/\-th time, alas.  So I wrote a quick Jekyll-replacement that
+runs inside emacs and uses ~org-mode~ as the post format.
+
+I replaced the liquid templating with a simple approach of reading and
+evaluating the contents of the tag as a Lisp expression.  So, there's
+no interleaving of template tags and content, which hasn't been a
+problem for me yet.
+
+Though it's a quick hack, I'm happy with it -- it scratches my itch,
+and I'm sure to improve it as time goes on.  Maybe it can turn into
+something useful for other people eventually, too.
+#+end_quote
