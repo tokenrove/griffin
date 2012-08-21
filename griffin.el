@@ -56,7 +56,7 @@
 
 (eval-and-compile
   (autoload 'union "cl")
-  (autoload 'redure "cl"))
+  (autoload 'reduce "cl"))
 
 (defgroup griffin nil "Hawley Griffin blog engine"
   :version "24.2" :group 'applications)
