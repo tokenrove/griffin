@@ -219,7 +219,7 @@ the default environment included in all others."
      (let ((env (griffin-read-leading-sexp)))
        (unless env (throw 'not-a-template-file nil))
        (prog1
-           (with-current-buffer (org-export-as-html 3 nil nil griffin-conversion-buffer-name t)
+           (with-current-buffer (org-export-as-html 3 nil griffin-conversion-buffer-name t)
              (cons (cons 'content (buffer-substring-no-properties (point-min) (point-max))) env))
          (kill-buffer griffin-conversion-buffer-name))))))
 
