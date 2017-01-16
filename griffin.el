@@ -53,6 +53,7 @@
 
 (eval-when-compile
   (require 'cl))
+(require 'ox)
 
 (eval-and-compile
   (autoload 'union "cl")
@@ -216,10 +217,14 @@ the default environment included in all others."
   (griffin-visit-file
    file
    (lambda ()
-     (let ((env (griffin-read-leading-sexp)))
+     (let ((env (griffin-read-leading-sexp))
+           (griffin-conversion-buffer-name "*Org HTML Export*")
+           (org-html-preamble nil)
+           (org-html-postamble nil)
+           (org-src-fontify-natively t))
        (unless env (throw 'not-a-template-file nil))
        (prog1
-           (with-current-buffer (org-export-as-html 3 nil griffin-conversion-buffer-name t)
+           (with-current-buffer (org-html-export-as-html)
              (cons (cons 'content (buffer-substring-no-properties (point-min) (point-max))) env))
          (kill-buffer griffin-conversion-buffer-name))))))
 
