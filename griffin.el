@@ -53,6 +53,7 @@
 
 (eval-when-compile
   (require 'cl))
+(require 'ox)
 
 (eval-and-compile
   (autoload 'union "cl")
@@ -216,10 +217,14 @@ the default environment included in all others."
   (griffin-visit-file
    file
    (lambda ()
-     (let ((env (griffin-read-leading-sexp)))
+     (let ((env (griffin-read-leading-sexp))
+           (griffin-conversion-buffer-name "*Org HTML Export*")
+           (org-html-preamble nil)
+           (org-html-postamble nil)
+           (org-src-fontify-natively t))
        (unless env (throw 'not-a-template-file nil))
        (prog1
-           (with-current-buffer (org-export-as-html 3 nil griffin-conversion-buffer-name t)
+           (with-current-buffer (org-html-export-as-html)
              (cons (cons 'content (buffer-substring-no-properties (point-min) (point-max))) env))
          (kill-buffer griffin-conversion-buffer-name))))))
 
@@ -278,7 +283,7 @@ the default environment included in all others."
 (defun griffin-join (str list) (reduce (lambda (x y) (concat x str y)) list :key #'symbol-name))
 
 (defun griffin-replace-regexp-in-string (regexp rep string &optional
-					fixedcase literal subexp start)
+                                        fixedcase literal subexp start)
   "Replace all matches for REGEXP with REP in STRING.
 
 As per replace-regexp-in-string, except REP is passed
@@ -311,28 +316,28 @@ and replace a sub-expression, e.g.
   ;; args whether to choose the buffer-based implementation, though it
   ;; might be reasonable to do so for long enough STRING.]
   (let ((l (length string))
-	(start (or start 0))
-	matches str mb me)
+        (start (or start 0))
+        matches str mb me)
     (save-match-data
       (while (and (< start l) (string-match regexp string start))
-	(setq mb (match-beginning 0)
-	      me (match-end 0))
-	;; If we matched the empty string, make sure we advance by one char
-	(when (= me mb) (setq me (min l (1+ mb))))
-	;; Generate a replacement for the matched substring.
-	;; Operate only on the substring to minimize string consing.
-	;; Set up match data for the substring for replacement;
-	;; presumably this is likely to be faster than munging the
-	;; match data directly in Lisp.
-	(string-match regexp (setq str (substring string mb me)))
-	(setq matches
-	      (cons (replace-match (if (stringp rep)
-				       rep
-				     (funcall rep (match-string 1 str)))
-				   fixedcase literal str subexp)
-		    (cons (substring string start mb) ; unmatched prefix
-			  matches)))
-	(setq start me))
+        (setq mb (match-beginning 0)
+              me (match-end 0))
+        ;; If we matched the empty string, make sure we advance by one char
+        (when (= me mb) (setq me (min l (1+ mb))))
+        ;; Generate a replacement for the matched substring.
+        ;; Operate only on the substring to minimize string consing.
+        ;; Set up match data for the substring for replacement;
+        ;; presumably this is likely to be faster than munging the
+        ;; match data directly in Lisp.
+        (string-match regexp (setq str (substring string mb me)))
+        (setq matches
+              (cons (replace-match (if (stringp rep)
+                                       rep
+                                     (funcall rep (match-string 1 str)))
+                                   fixedcase literal str subexp)
+                    (cons (substring string start mb) ; unmatched prefix
+                          matches)))
+        (setq start me))
       ;; Reconstruct a string from the pieces.
       (setq matches (cons (substring string start l) matches)) ; leftover
       (apply #'concat (nreverse matches)))))
