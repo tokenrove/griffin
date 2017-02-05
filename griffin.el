@@ -91,10 +91,10 @@ the format."
 
 (defun griffin-lookup-template (string env)
   (eval
-     `(let (,@(loop for (k . v) in env
-                    collect (list k (if (and (listp v) (not (eq 'quote (car v)))) (list 'quote v) v))))
-        ,(car (read-from-string string)))
-     t))
+   `(let (,@(loop for (k . v) in env
+                  collect (list k (if (and (listp v) (not (eq 'quote (car v)))) (list 'quote v) v))))
+      ,(car (read-from-string string)))
+   t))
 
 (defun griffin-present-value (v) (with-output-to-string (princ v)))
 
@@ -148,8 +148,8 @@ the default environment included in all others."
   (save-some-buffers)
   (let ((griffin-base-directory base-directory)
         (griffin-output-directory (if (file-name-absolute-p griffin-output-directory)
-                                             griffin-output-directory
-                                           (concat base-directory "/" griffin-output-directory))))
+                                      griffin-output-directory
+                                    (concat base-directory "/" griffin-output-directory))))
     (make-directory griffin-output-directory t)
     (let ((env (griffin-env-union
                 `((base-directory . ,base-directory)
@@ -170,9 +170,9 @@ the default environment included in all others."
 (defun griffin-escape-xml (string)
   (replace-regexp-in-string "[&<>]"
                             (lambda (x) (cond ((string= x "&") "&amp;")
-                                         ((string= x "<") "&lt;")
-                                         ((string= x ">") "&gt;")
-                                         (t x)))
+                                              ((string= x "<") "&lt;")
+                                              ((string= x ">") "&gt;")
+                                              (t x)))
                             string t t))
 
 (defun griffin-generate-posts ()
@@ -283,7 +283,7 @@ the default environment included in all others."
 (defun griffin-join (str list) (reduce (lambda (x y) (concat x str y)) list :key #'symbol-name))
 
 (defun griffin-replace-regexp-in-string (regexp rep string &optional
-                                        fixedcase literal subexp start)
+                                                fixedcase literal subexp start)
   "Replace all matches for REGEXP with REP in STRING.
 
 As per replace-regexp-in-string, except REP is passed
