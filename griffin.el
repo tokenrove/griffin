@@ -222,7 +222,7 @@ the default environment included in all others."
            (org-html-preamble nil)
            (org-html-postamble nil)
            (org-src-fontify-natively t))
-       (unless env (throw 'not-a-template-file nil))
+       (unless env (throw 'not-a-template-file file))
        (prog1
            (with-current-buffer (org-html-export-as-html)
              (cons (cons 'content (buffer-substring-no-properties (point-min) (point-max))) env))
