@@ -189,14 +189,14 @@ the default environment included in all others."
   (let* ((url (format "%s/%s.html" (format-time-string "/%Y/%m/%d" date) slug))
          (in (griffin-input-filename (concat "_posts/" file)))
          (out (griffin-output-filename (substring url 1)))
+         (env (griffin-read-default-env))
          (env
-          (griffin-env-union
-           (griffin-read-default-env)
+          (griffin-env-union env
            `((date . ,date)
              (slug . ,slug)
              (url . ,url))
            (cond ((string= format "html") (griffin-read-file in))
-                 ((string= format "org") (griffin-convert-org in))
+                 ((string= format "org") (griffin-convert-org in (alist-get 'ext-plist env)))
                  (t (message "Don't know how to convert format `%s'; ignoring post %s" format file)
                     (throw 'unknown-format nil))))))
     ;; feed html through templating to produce _site/yyyy/mm/dd/post.html
@@ -213,7 +213,7 @@ the default environment included in all others."
       (forward-line 1)
       (rest sexp))))
 
-(defun griffin-convert-org (file)
+(defun griffin-convert-org (file ext-plist)
   (griffin-visit-file
    file
    (lambda ()
@@ -224,7 +224,9 @@ the default environment included in all others."
            (org-src-fontify-natively t))
        (unless env (throw 'not-a-template-file file))
        (prog1
-           (with-current-buffer (org-html-export-as-html)
+           (with-current-buffer (org-html-export-as-html
+                                 nil nil nil nil
+                                 ext-plist)
              (cons (cons 'content (buffer-substring-no-properties (point-min) (point-max))) env))
          (kill-buffer griffin-conversion-buffer-name))))))
 
